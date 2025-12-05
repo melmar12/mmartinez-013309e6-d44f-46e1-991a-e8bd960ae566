@@ -27,6 +27,28 @@ const users: UserRecord[] = [
     role: 'owner',
     orgId: 'org-1',
   },
+  {
+    id: '2',
+    email: 'admin@example.com',
+    passwordHash: bcrypt.hashSync('password123', 10),
+    role: 'admin',
+    orgId: 'org-1',
+  },
+  {
+    id: '3',
+    email: 'viewer@example.com',
+    passwordHash: bcrypt.hashSync('password123', 10),
+    role: 'viewer',
+    orgId: 'org-1',
+  },
+  {
+    id: '4',
+    email: 'owner2@example.com',
+    passwordHash: bcrypt.hashSync('password123', 10),
+    role: 'owner',
+    orgId: 'org-2',
+  }
+
 ];
 
 @Injectable()

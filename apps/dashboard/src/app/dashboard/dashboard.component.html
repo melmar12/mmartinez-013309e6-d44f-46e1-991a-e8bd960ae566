@@ -9,16 +9,20 @@
           Authenticated dashboard with tasks scoped by role and organization.
         </p>
       </div>
+      <div class="px-3 py-2 rounded-md bg-emerald-500 hover:bg-emerald-600 text-xs font-medium" style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+        <button *ngIf="!isLoggedIn" (click)="goToLogin()">Login</button>
+        <button *ngIf="isLoggedIn" (click)="logout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- Health status -->
       <button
         class="px-3 py-2 rounded-md bg-emerald-500 hover:bg-emerald-600 text-xs font-medium"
         (click)="checkHealth()"
         [disabled]="healthLoading"
       >
         {{ healthLoading ? 'Checking API…' : 'Check API health' }}
-      </button>
-    </header>
-
-    <!-- Health status -->
+    </button>
     <section class="text-sm">
       <ng-container *ngIf="healthError; else healthOk">
         <p class="text-red-400">

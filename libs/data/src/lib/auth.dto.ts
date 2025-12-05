@@ -1,5 +1,3 @@
-// libs/data/src/lib/auth.dto.ts
-
 export type Role = 'owner' | 'admin' | 'viewer';
 
 export interface AuthUserDto {

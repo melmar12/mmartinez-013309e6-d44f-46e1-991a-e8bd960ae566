@@ -24,7 +24,7 @@ export class TasksService {
       {
         id: 't1',
         title: 'Review access controls',
-        description: 'Verify RBAC rules for admin/viewer',
+        description: 'Verify RBAC rules are correctly applied',
         status: 'in_progress',
         orgId: 'org-1',
         ownerId: '1',
@@ -41,6 +41,16 @@ export class TasksService {
         createdAt: now,
         updatedAt: now,
       },
+      {
+        id: 't3',
+        title: 'Org 2 - Team meeting',
+        description: 'Discuss project roadmap',
+        status: 'todo',
+        orgId: 'org-2',
+        ownerId: '1',
+        createdAt: now,
+        updatedAt: now,
+      }
     );
   }
 

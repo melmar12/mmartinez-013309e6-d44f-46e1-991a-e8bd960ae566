@@ -4,6 +4,9 @@ import { HealthService } from '../health.service';
 import { TasksService } from '../tasks.service';
 import { TaskDto } from '@mmartinez-013309e6-d44f-46e1-991a-e8bd960ae566/data';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
+
 
 @Component({
   standalone: true,
@@ -27,15 +30,27 @@ export class DashboardComponent implements OnInit {
 
   newTaskTitle = '';
   newTaskDescription = '';
+  isLoggedIn = false;
 
   constructor(
     // eslint-disable-next-line @angular-eslint/prefer-inject
     private healthService: HealthService,
     // eslint-disable-next-line @angular-eslint/prefer-inject
     private tasksService: TasksService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
+    private auth: AuthService,
+    // eslint-disable-next-line @angular-eslint/prefer-inject
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
+    this.isLoggedIn = this.auth.isLoggedIn();
+
+    if (!this.isLoggedIn) {
+      // redirect if not authenticated
+      // this.router.navigate(['/login']);
+    }
+
     this.checkHealth();
     this.loadTasks();
   }
@@ -127,4 +142,14 @@ export class DashboardComponent implements OnInit {
         },
       });
   }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
 }
