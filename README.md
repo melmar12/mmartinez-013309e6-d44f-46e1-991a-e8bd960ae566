@@ -14,7 +14,65 @@ This project was built to demonstrate practical full-stack engineering with clea
 
 ---
 
-### 📁 Monorepo Structure
+### ▶️ Project Setup
+
+#### Install dependencies
+```bash
+npm install --legacy-peer-deps
+```
+
+#### ️Run the API
+```bash
+nx serve api
+```
+
+Runs on: http://localhost:3000
+
+#### Run the Angular dashboard
+```bash
+nx serve dashboard
+```
+
+Runs on: http://localhost:4200
+
+#### Run tests
+```bash
+nx test api
+nx test dashboard
+```
+
+---
+### 🧪 Testing
+
+#### Backend (NestJS + Jest)
+
+Located: `apps/api/src/app/tasks/tasks.service.spec.ts`
+
+Covers:
+
+* Role permissions (viewer/admin/owner)
+
+* Org scoping
+
+* Forbidden actions
+
+* Missing resource errors
+
+#### Frontend (Angular + Jest)
+
+Located: `apps/dashboard/src/app/dashboard/dashboard.component.spec.ts`
+
+Covers:
+
+* Component creation
+
+* Mocked service interactions
+
+* Dashboard initialization behavior
+
+---
+### 🏗 Architecture Overview
+#### Monorepo Structure
 
 ```bash
 apps/
@@ -32,9 +90,6 @@ libs/
   auth/          # Shared RBAC utilities (Roles, RolesGuard, org helpers)
 ```
 --- 
-
-### 🏗 Architecture Overview
-
 #### Authentication
 
 * JWT-based (`Bearer <token>`)
@@ -49,7 +104,7 @@ libs/
 
   * `sub` (user ID)
 
-  * `email``
+  * `email`
 
   * `role` (owner/admin/viewer)
 
@@ -59,7 +114,7 @@ Users are seeded for demo (owner, admin, viewer)
 
 ---
 
-### RBAC (Role-Based Access Control)
+### 🔒 Access Control Implementation (RBAC)
 
 RBAC implemented through:
 
@@ -135,58 +190,111 @@ The dashboard includes:
 The UI uses standalone components for simplicity and structure.
 
 ---
-### 🧪 Testing
+### 📁 Data Model Explanation
 
-#### Backend (NestJS + Jest)
+This project uses a simple logical data model centered around three core concepts:
 
-Located: `apps/api/src/app/tasks/tasks.service.spec.ts`
+* Organization – a tenant boundary for users and tasks
 
-Covers:
+* User – an authenticated actor with a role within an organization
 
-* Role permissions (viewer/admin/owner)
+* Task – a unit of work scoped to an organization and owned by a user
 
-* Org scoping
+In this implementation, data is stored in memory for simplicity, but the shapes are designed to map directly to a relational schema (e.g. Postgres) later.
 
-* Forbidden actions
+#### Entities and Fields
+**Organization**
 
-* Missing resource errors
+Represents a logical tenant or customer.
 
-#### Frontend (Angular + Jest)
+| Field | Type   | Description                                                    |
+| ----- | ------ | -------------------------------------------------------------- |
+| orgId | string | Unique identifier for the org                                  |
+| name  | string | Display name |
 
-Located: `apps/dashboard/src/app/dashboard/dashboard.component.spec.ts`
+**User**
 
-Covers:
+Represents an authenticated user who belongs to exactly one organization and has a role.
 
-* Component creation
+| Field | Type   | Description                                     |
+| ----- | ------ | ----------------------------------------------- |
+| id    | string | Unique user identifier                          |
+| email | string | Login/email address                             |
+| role  | string | `owner`, `admin`, or `viewer`                   |
+| orgId | string | Foreign key referencing the user’s organization |
 
-* Mocked service interactions
+In the JWT payload, these appear as:
 
-* Dashboard initialization behavior
+* `sub` (user id)
+
+* `email`
+
+* `role`
+
+* `orgId`
+
+**Task**
+
+Represents a single task within an organization, created and owned by a user.
+
+| Field       | Type   | Description                                   |
+| ----------- | ------ | --------------------------------------------- |
+| id          | string | Unique task identifier                        |
+| title       | string | Short title                                   |
+| description | string | Optional longer description                   |
+| status      | string | `todo`, `in_progress`, or `done`              |
+| orgId       | string | Foreign key referencing the owning org        |
+| ownerId     | string | Foreign key referencing the owning user       |
+| createdAt   | string | ISO timestamp when the task was created       |
+| updatedAt   | string | ISO timestamp when the task was last modified |
+
+All task operations are scoped by `orgId`, and write operations (create, update, delete) are additionally restricted by the user’s `role`.
 
 ---
 
-### ▶️ Running the Project
+**Logical ERD / Relationships**
 
-#### 1️⃣ Install dependencies
-```bash
-npm install --legacy-peer-deps
+At a high level, the relationships are:
+
+* One `Organization` has many `Users`
+
+* One `Organization` has many `Tasks`
+
+* One `User` can own many `Tasks`
+
+```mermaid
+erDiagram
+
+  ORGANIZATION ||--o{ USER : has
+  ORGANIZATION ||--o{ TASK : contains
+  USER        ||--o{ TASK : owns
+
+  ORGANIZATION {
+    string orgId
+  }
+
+  USER {
+    string id
+    string email
+    string role
+    string orgId
+  }
+
+  TASK {
+    string id
+    string title
+    string description
+    string status
+    string orgId
+    string ownerId
+    string createdAt
+    string updatedAt
+  }
 ```
 
-#### ️2️⃣ Run the API
-```bash
-nx serve api
-```
-
-Runs on: http://localhost:3000
-
-#### 3️⃣ Run the Angular dashboard
-```bash
-nx serve dashboard
-```
-
-Runs on: http://localhost:4200
 
 ---
+
 ### 🔌 API Endpoints
 
 #### Auth
