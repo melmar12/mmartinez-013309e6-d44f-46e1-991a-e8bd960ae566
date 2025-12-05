@@ -1,0 +1,37 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-900 text-slate-100">
+  <div class="p-8 rounded-xl shadow-lg bg-slate-800 w-full max-w-md">
+    <h1 class="text-2xl font-semibold mb-4">
+      {{ title }}
+    </h1>
+
+    <p class="text-sm mb-6 text-slate-300">
+      Minimal setup: Angular frontend ↔ NestJS backend in an Nx monorepo.
+    </p>
+
+    <button
+      class="px-4 py-2 rounded-md bg-emerald-500 hover:bg-emerald-600 text-sm font-medium"
+      (click)="checkHealth()"
+      [disabled]="loading"
+    >
+      {{ loading ? 'Checking...' : 'Check API health' }}
+    </button>
+
+    <div class="mt-4 text-sm">
+      <ng-container *ngIf="error; else okBlock">
+        <p class="text-red-400">
+          {{ error }}
+        </p>
+      </ng-container>
+
+      <ng-template #okBlock>
+        <p *ngIf="healthStatus">
+          API status:
+          <span class="font-semibold">{{ healthStatus }}</span>
+        </p>
+        <p *ngIf="healthTimestamp" class="text-xs text-slate-400">
+          Last checked: {{ healthTimestamp }}
+        </p>
+      </ng-template>
+    </div>
+  </div>
+</div>
